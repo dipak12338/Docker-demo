@@ -1,0 +1,214 @@
+01:38:21 Docker Volume
+01:50:01 Mount Binds in Docker
+02:01:47 Working with APIs
+02:05:58 Container with Local DB
+02:13:35 Project with Multiple Containers
+
+
+Docker Volume:
+--------------
+
+docker volume create myvolume
+
+docker run -it -v myvolume:/usr/dipak/myapp container_name 
+
+docker volume inspect myvolume
+
+
+Mount Binds in Docker:
+------------------------
+It help us to mount the data into txt/other extensions files.
+Ex. e can mount the .txt file of local file system to Container file system.
+
+docker run -it mydata
+
+docker run -it -v /home/dipak/compose_demo/test.txt:/usr/dipak/test/test.txt --rm mydata
+
+
+Example:
+
+docker run -it --name mycontainer  -v dipak.txt:/home/dipak/dipak.txt nginx:latest
+
+
+dipak@DESKTOP-A2Q4C9J:~$ doocker exec -it mycontainer bash
+root@ca7642bc3adf:/# cd /home/dipak/
+root@ca7642bc3adf:/# ls 
+dipak.txt
+
+Docker ignore || Communication from/to Containers  || Working with APIs || Container with Local DB:
+---------------------------------------------------------------------------------------------------
+
+
+copy . .            it copyies all the file from local file syste to container file system.
+
+vi .dockerignore
+
+Dockerfile
+.git 
+restricted.txt
+
+
+Ex. 
+
+
+
+
+
+
+
+
+
+Project with Multiple Containers:
+---------------------------------
+
+docker pull mysql
+
+docker run -itd --name mydatabase --env MYSQL_ROOT_PASSORD="root" --env MYSQL_DATA_BASE='' --network = my-net mysql
+
+docker ps
+
+docker inspect mysqldb 								--with mysqldb is container-name
+
+
+Docker Network (single Container):
+-----------------------------------
+
+Connected two containers.
+Issue: First we needs to create/build mysql image and then python image.
+
+
+docker network create my-net
+
+docker run -itd --name mydatabase --env MYSQL_ROOT_PASSORD="root" --env MYSQL_DATA_BASE='' --network = my-net mysql
+ 
+docker run -it --name mycontainer --network = my-net python:latest
+
+
+
+What is Docker Compose?
+------------------------
+
+Configuration file to manage multiple containers running on same machine.
+Note: All services belongs to one network in docker-compose file. Exa. Bridge network
+
+docker run -itd --name mydatabase --env MYSQL_ROOT_PASSORD="root" --env MYSQL_DATA_BASE='' --network = my-net mysql
+
+
+Example:
+
+services:                                        
+ mysqldb:												--- service name
+   image: 'mysql:latest'
+   environment:
+     - MYSQL_ROOT_PASSWORD=root
+     - MYSQL_DATABASE=userinfo
+   container_name: "mysqldb"
+
+   healthcheck:									-- check as a logger - if it connects/ping then OK
+      test: ['CMD','mysqladmin','ping','-h','localhost']
+      timeout: 20s
+      retries: 10   
+   
+dipak@DESKTOP-A2Q4C9J:~/compose_demo$  docker-compose up
+				Start the image and container 
+
+dipak@DESKTOP-A2Q4C9J:~/compose_demo$  docker-compose up -d
+
+
+Docker Compose for Multiple containers:
+---------------------------------------
+
+Add one more Container named as - mypyapp.
+ 
+
+ mypythonapp:									--- service name
+   build: ./									--- For Dockerfile 
+   container_name: mypyapp
+   depends_on:									-- first start up the mysqldb
+     mysqldb:
+       condition: service_healthy   
+   stdin_open: true								-- ignore the loggings and get inputs
+   tty: true
+
+
+dipak@DESKTOP-A2Q4C9J:~/compose_demo$  docker-compose run -d mysqldb					(Run only one service)
+dipak@DESKTOP-A2Q4C9J:~/compose_demo$  docker-compose mypythonapp		 
+
+
+
+Docker compose with network:
+-----------------------------------
+	networks:
+		- my-network
+ 
+networks:
+  my-network:
+ 
+
+
+Docker compose with volume:
+----------------------
+
+	volumes:
+      - ./servers.txt:/myapp/servers.txt			-- ( Add the data into servers.txt)
+
+
+Docker compose with port binding:
+---------------------------------
+
+        ports:
+			-- 8090:80
+
+Refer Example: file Docker-compose-port-binding.yaml
+
+
+
+==========================================================================================================================
+
+
+EXAMPLE:
+
+DOCKER_COMPOSE.YAML
+--------------------
+
+
+services:                               
+  mysqldb:
+    image: 'mysql:latest'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=userinfo
+    container_name: "mysqldb"
+    networks:
+      - my-network
+    healthcheck:
+      test: ['CMD','mysqladmin','ping','-h','localhost']
+      timeout: 20s
+      retries: 10
+
+  mypythonapp:
+    build: ./
+    container_name: mypyapp
+    networks:
+      - my-network
+    volumes:
+      - ./servers.txt:/myapp/servers.txt
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+networks:
+  my-network:
+
+
+
+
+
+
+
+
+
+ 
+ 

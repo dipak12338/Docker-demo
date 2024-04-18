@@ -1,0 +1,53 @@
+Docker Networking:
+-----------------
+Container networking refers to the ability for containers to connect to and communicate with each other, or to non-Docker workloads.
+
+ 
+Why we use networking in docker?
+
+
+docker run -it --name server1 <image_name>
+uname - linux
+hostname 172.17.0.12		
+ping www.google.com 			-- pinged
+ping 172.17.0.13				-- pinged
+ping server2 					-- nope
+
+
+after (docker network connect work server1)
+
+ping 172.18.0.2					-- pinged
+
+
+============================
+
+docker run -it --name server2 <image_name>
+uname - linux
+hostname  - 172.17.0.13
+ping www.google.com				-- pinged
+ping 172.17.0.12				-- pinged
+ping server1 					-- nope
+ping 172.18.0.2					-- nope
+
+================================
+create custom network - work
+
+docker run -it --network work  --name server3 apline 
+
+hostname  172.18.0.2
+
+ping 172.17.0.12		   -- nope
+ping 172.17.0.13		   -- nope
+
+	
+
+##
+solution:
+docker network connect work server1
+
+
+
+
+
+
+
