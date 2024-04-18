@@ -1,0 +1,71 @@
+
+Port Binding :
+=============
+
+
+Using Dockerfile
+================
+
+
+FROM nginx:alpine
+COPY . /usr/share/nginx/html/test
+
+
+docker build -t mywbapp .
+
+docker run -p 8080:80 -d --name mywebsite mywbapp
+
+http://127.0.0.1:8084/test/index.html
+
+
+REF : https://www.free-css.com/free-css-templates
+
+
+Using volumes:
+==============
+
+
+Download the .zip file from below website-
+https://www.free-css.com/assets/files/free-css-templates/download/page296/carvilla.zip
+
+
+docker run -it -p 8086:80 -d -v /home/dipak/static_website/carvilla:/usr/share/nginx/html/carvilla-v1.0 --name mystatic-website nginx
+docker run -it -p 8090:80 -d -v /home/dipak/static_website/carvilla:/usr/share/nginx/html/test3 --name mystatic-website6 nginx
+
+http://localhost:8090/test3/index.html
+
+
+Example:
+
+docker run --name mynewwebsite -p 1234:80  -v /home/dipak/static_website/space-science/upload:/usr/share/nginx/html/space-yatra nginx:latest
+ 
+ 
+
+
+Using Docker Compose:
+---------------------
+
+
+services:
+     mystatic-website6:
+        image: nginx
+        volumes:
+            - /home/dipak/static_website/carvilla:/usr/share/nginx/html/test32
+        ports:
+          - 8080:80
+        container_name: mystatic-website6
+		
+
+http://localhost:8080/test32/index.html
+
+
+/home/dipak/Docker_Compose_Demo/static_website
+
+services:
+     mystatic-website7:
+        image: nginx
+        volumes:
+            - /home/dipak/Docker_Compose_Demo/static_website:/usr/share/nginx/html/test33
+        ports:
+          - 8081:80
+        container_name: mystatic-website
