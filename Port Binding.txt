@@ -58,7 +58,6 @@ services:
 
 http://localhost:8080/test32/index.html
 
-
 /home/dipak/Docker_Compose_Demo/static_website
 
 services:
